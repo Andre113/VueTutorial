@@ -15,35 +15,34 @@
 		<section class="section">
 			<div class="container">
 				<div class="columns">
-					<div class="columns is-4 is-offset-4">
+					<div class="column is-4 is-offset-2">
 						<div class="card">
-							<div class="card_image">
-								<figure class="image is-4by3">
-									<img :src="image">
-								</figure>
-							</div>
+							<card-image :image="image"></card-image>
+
 							<div class="card-content">
-								<div class="media">
-									<div class="media-content">
-										<p class="title is-4">{{ name }}</p>
-									</div>
-								</div>
+								<media :name="name"></media>
+
 								<div class="content">
 									<p v-if="description">{{ description }}</p>
 									<p v-else> {{ default_description }} </p>
 
 									<hr/>
-										<b> {{ number_of_abilites }}</b>
+										<b> {{ number_of_abilities }}</b>
 									<hr/>
 
-									<div class="tags">
-										<span class="tag is-primary" v-for="ability in abilites" :key="ability.id">
-											{{ ability.title }}
-										</span>
-									</div>
+									<tags :abilities="abilities"></tags>
 								</div>
 							</div>
 						</div>
+					</div>
+
+					<div class="column is 4">
+						<name-field @change="changeName"></name-field>
+						<description-field @change="changeDescription"></description-field>
+
+						<hr/>
+
+						<add-ability @change="addAbility"></add-ability>
 					</div>
 				</div>
 			</div>
@@ -51,6 +50,114 @@
 	</div>
 
 	<script>
+		Vue.component('card-image', {
+			props: ['image'],
+			template: `
+				<div class="card-image">
+					<figure class="image is-4by3">
+						<img :src="image">
+					</figure>
+				</div>
+			`
+		})
+
+		Vue.component('media', {
+			props: ['name'],
+			template: `
+				<div class="media">
+					<div class="media-content">
+						<p class="title is-4">{{ name }}</p>
+					</div>
+				</div>
+			`
+		})
+
+		Vue.component('tags', {
+			props: ['abilities'],
+			template: `
+				<div class="tags">
+					<span class="tag is-primary" v-for="ability in abilities" :key="ability.id">
+						{{ ability.title }}
+					</span>
+				</div>
+			`
+		})
+
+		Vue.component('name-field', {
+			template: `
+				<div class="field">
+					<div class="control">
+						<label>Name</label><br/>
+						<input class="input" placeholder="Name" v-model="name" @input="changeName">
+					</div>
+				</div>
+			`,
+			data: function(){
+				return {
+					name: this.$parent.name
+				}
+			}, methods: {
+				changeName: function(){
+					if (this.name){
+						this.$emit('change', this.name)
+					} else {
+						this.$emit('change', 'Unnamed')
+					}
+				}
+			}
+		})
+
+		Vue.component('description-field', {
+			template: `
+				<div class="field">
+					<div class="control">
+						<label>Description</label><br/>
+						<textarea class="textarea" v-model="description" @input="changeDescription"></textarea>
+					</div>
+				</div>
+			`,
+			data: function(){
+				return {
+					description: this.$parent.description
+				}
+			}, methods: {
+				changeDescription: function(){
+					if (this.description){
+						this.$emit('change', this.description)
+					} else {
+						this.$emit('change', 'No Description')
+					}
+				}
+			}
+		})
+
+		Vue.component('add-ability', {
+			template: `
+				<div class="field is-grouped">
+					<div class="control">
+						<input class="input" placeholder="Ability" v-model="ability">
+					</div>
+
+					<div class="control">
+						<button @click="addAbility" class="button">Add</button>
+					</div>
+				</div>
+			`,
+			data: function(){
+				return {
+					ability: ""
+				}
+			},
+			methods: {
+				addAbility: function() {
+					if (this.ability){
+						this.$emit('change', this.ability)
+						this.ability = ''
+					}
+				}
+			}
+		})
+
 		var hero_app = new Vue({
 			el: '#hero_app',
 			data: {
@@ -58,16 +165,31 @@
 				description: "The World belong to me!",
 				default_description: "The world belong to the people!",
 				image: "https://bulma.io/images/placeholders/1280x960.png",
-				abilites: [
+				abilities: [
 					{id: 1, 'title': 'MEATDOWN'},
 					{id: 2, 'title': 'DARK MATTER'},
 					{id: 3, 'title': 'RAILGUN'},
-					{id: 3, 'title': 'VECTOR MANIPULATION'}
+					{id: 4, 'title': 'VECTOR MANIPULATION'},
+					{id: 5, 'title': 'NONE'}
 				]
 			},
 			computed: {
-				number_of_abilites: function() {
-					return 'Number of abilites: ' + this.abilites.length;
+				number_of_abilities: function() {
+					return 'Number of abilities: ' + this.abilities.length;
+				}
+			},
+			methods: {
+				addAbility: function(ability) {
+					this.abilities.push({
+						id: this.abilities.length+1, 
+						title: ability
+					})
+				},
+				changeName: function(name) {
+					this.name = name
+				},
+				changeDescription: function(description) {
+					this.description = description
 				}
 			}
 		})
