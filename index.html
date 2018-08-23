@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+
+	<title>Introduction to Vue.js by Vue Hero</title>
+
+	<script src="https://unpkg.com/vue"></script>
+</head>
+
+<body>
+	<div id="hero_app">
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="columns is-4 is-offset-4">
+						<div class="card">
+							<div class="card_image">
+								<figure class="image is-4by3">
+									<img :src="image">
+								</figure>
+							</div>
+							<div class="card-content">
+								<div class="media">
+									<div class="media-content">
+										<p class="title is-4">{{ name }}</p>
+									</div>
+								</div>
+								<div class="content">
+									<p v-if="description">{{ description }}</p>
+									<p v-else> {{ default_description }} </p>
+
+									<hr/>
+										<b> {{ number_of_abilites }}</b>
+									<hr/>
+
+									<div class="tags">
+										<span class="tag is-primary" v-for="ability in abilites" :key="ability.id">
+											{{ ability.title }}
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<script>
+		var hero_app = new Vue({
+			el: '#hero_app',
+			data: {
+				name: "GOD HUNTER",
+				description: "The World belong to me!",
+				default_description: "The world belong to the people!",
+				image: "https://bulma.io/images/placeholders/1280x960.png",
+				abilites: [
+					{id: 1, 'title': 'MEATDOWN'},
+					{id: 2, 'title': 'DARK MATTER'},
+					{id: 3, 'title': 'RAILGUN'},
+					{id: 3, 'title': 'VECTOR MANIPULATION'}
+				]
+			},
+			computed: {
+				number_of_abilites: function() {
+					return 'Number of abilites: ' + this.abilites.length;
+				}
+			}
+		})
+	</script>
+</body>
+</html>
